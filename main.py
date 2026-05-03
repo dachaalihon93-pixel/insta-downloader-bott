@@ -1,9 +1,29 @@
 import telebot
 from telebot import types
 import requests
+import os
+from flask import Flask
+from threading import Thread
 
+# 1. Render port xatosini oldini olish (Flask)
+app = Flask('')
+@app.route('/')
+def home():
+    return "Bot is running!"
+
+def run():
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+# 2. Bot sozlamalari
 TOKEN = '8742839052:AAE7G3VeexHvZ_ulCrOrJXK6boorJaNz98Y'
 bot = telebot.TeleBot(TOKEN)
+
+# 3. Serverni yoqish
+keep_alive()
 
 strings = {
     'uz': {
@@ -56,9 +76,18 @@ def download(message):
     lang = user_lang.get(message.chat.id, 'uz')
     bot.send_message(message.chat.id, strings[lang]['wait'])
     try:
+        # Kuchaytirilgan API so'rovi
         res = requests.post("https://api.cobalt.tools/api/json", 
-                            json={"url": message.text.strip(), "vQuality": "720"},
-                            headers={"Accept": "application/json", "Content-Type": "application/json"})
+                            json={
+                                "url": message.text.strip(), 
+                                "vQuality": "720",
+                                "isNoTTWatermark": True
+                            },
+                            headers={
+                                "Accept": "application/json", 
+                                "Content-Type": "application/json",
+                                "Referer": "https://cobalt.tools/"
+                            })
         video_url = res.json().get('url')
         if video_url:
             markup = types.InlineKeyboardMarkup()
