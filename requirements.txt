@@ -1,2 +1,13 @@
-pyTelegramBotAPI
-requests
+        # Eski requests qismini mana bunga almashtiring:
+        res = requests.post("https://api.cobalt.tools/api/json", 
+                            json={
+                                "url": url, 
+                                "vQuality": "720",
+                                "isAudioOnly": False,
+                                "isNoTTWatermark": True
+                            },
+                            headers={
+                                "Accept": "application/json", 
+                                "Content-Type": "application/json",
+                                "Referer": "https://cobalt.tools/"
+                            })
